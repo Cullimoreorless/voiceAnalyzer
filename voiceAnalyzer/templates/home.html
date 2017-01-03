@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}
+Comic Voice Analyzer
+{% endblock %}
+
+{% from 'form_macros.html' import render_field %}
+
+{% block content %}
+<h1>
+    Voice Analyzer 
+</h1>
+<div class="row well">
+    <div class="col-sm-8">
+        Want to learn more about how you come across to the world? Want to learn more about your 
+        friends and followers Twitter presence? Enter a Twitter handle and see when that account is most active, 
+        what sentiments the account tends to present, what words are most commonly used, and other data points.
+    </div>
+    <div class="col-sm-4">
+        <form method="POST">
+            {{form.hidden_tag()}}
+            {{ render_field(form.username, class="form-control") }}
+            <button type="submit">Analyze</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
