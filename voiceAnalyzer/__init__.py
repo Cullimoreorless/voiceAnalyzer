@@ -11,7 +11,7 @@ sentimentDF = pd.read_csv('./datasets/wordsentiment.csv')
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(__name__)
-app.config["SECRET_KEY"] = b'v\xc4\xb3y\xb9\x97\x14\xb4\x94\xe83\xee\xb9I\xbe`z>\x9a\x1b%\x98\xad<';
+app.config["SECRET_KEY"] = b'v\xb3y\xc4\xb9\x97\x14\xb4\x94\xe83\xee\xb9I\xbe`z>\x9a\x1b%\x98\xad<';
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///'+ os.path.join(basedir, 'twitterAnalyzer.db')
 app.config['DEBUG'] = True
 db = SQLAlchemy(app)
@@ -27,5 +27,5 @@ oauth = OAuth(access_token, access_secret, consumer_key, consumer_secret)
 twitterApi = Twitter(auth=oauth)
 
 import models
-#import views
+import views
 

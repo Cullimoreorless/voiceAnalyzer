@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-from voiceAnalyzer import app, db
+from voiceAnalyzer import *
 from flask_script import Manager, prompt_bool
 
 
@@ -15,7 +15,7 @@ def initdb():
 
 @manager.command
 def dropdb():
-    if prompt_bool(  "Are you sure you want to drop the database?"):
+    if prompt_bool("Are you sure you want to drop the database?"):
         db.drop_all()
         print('dropped it, you fool')
 

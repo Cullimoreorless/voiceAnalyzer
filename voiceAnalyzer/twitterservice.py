@@ -7,6 +7,7 @@ import string
 from pandas import pandas as pd
 from voiceAnalyzer import twitterApi, sentimentDF
 
+
 class TwitterService:
     """Service for retrieving and manipulating twitter data"""
     def __init__(self, username, countOfTweets):
@@ -73,7 +74,7 @@ class TwitterService:
             per specified column"""
         total_sum = dataframe[countcolumn].sum()
         dataframe['percentage'] = dataframe.apply(
-            lambda row: (row[countcolumn] / total_sum) * 100,
+            lambda row: row[countcolumn] / total_sum,
             axis=1)
         return dataframe
 
@@ -83,3 +84,4 @@ pp(test_twitter_service.get_tweet_day_of_week_data())
 pp(test_twitter_service.get_tweet_hour_of_day_data())
 pp(test_twitter_service.get_tweet_sentiment_data())
 
+pp(str(test_twitter_service.get_tweet_day_of_week_data().to_json()))

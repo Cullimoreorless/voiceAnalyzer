@@ -3,13 +3,12 @@
   <head>
     <meta charset="utf-8">
     <title>{% block title %}{% endblock %}</title>
-    <!--<link rel="stylesheet" href="style.css">
-    <script src="script.js"></script>-->
     <link href="https://fonts.googleapis.com/css?family=Libre+Baskerville" rel="stylesheet">
-    <!--<link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">-->
+    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css')}}">
   </head>
   <body>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
     <div class="container">
         <div class="row">
             <div class="col-sm-12">
@@ -17,11 +16,10 @@
             </div>
         </div>
     </div>
-    <script src="https://d3js.org/d3.v4.min.js"></script>
 
-    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>*/
-    < Include all compiled plugins (below), or include individual files as needed -->
-    <!--<script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>-->
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
   </body>
 </html>
