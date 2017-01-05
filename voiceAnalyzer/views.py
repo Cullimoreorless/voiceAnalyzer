@@ -13,19 +13,22 @@ def home():
     hod_data = None
     username = None
     sent_data = None
+    sent_emot_data = None
+    word_cloud_data = None
     if form.validate_on_submit():
         username = form.username.data
-        ts = TwitterService(username, 1000)
+        ts = TwitterService(username, 3000)
         dow_data = ts.get_tweet_day_of_week_data().to_json(orient='records')
         hod_data = ts.get_tweet_hour_of_day_data().to_json(orient='records')
         sent_data = ts.get_tweet_sentiment_data().to_json(orient='records')
+        sent_emot_data = ts.get_word_emotion_sentiment_data().to_json(orient='records')
+        word_cloud_data = ts.get_word_cloud_data()
     return render_template(
         'home.html',
-        form=form,
-        username=username,
-        dow_data=dow_data,
-        hod_data=hod_data,
-        sent_data=sent_data
+        form=form, username=username,
+        dow_data=dow_data, hod_data=hod_data,
+        sent_data=sent_data, sent_emot_data=sent_emot_data,
+        word_cloud_data=word_cloud_data
     )
 
 

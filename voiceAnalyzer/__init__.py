@@ -7,6 +7,7 @@ from flask_sqlalchemy import SQLAlchemy
 from pandas import pandas as pd
 
 sentimentDF = pd.read_csv('./datasets/wordsentiment.csv')
+sentimentEmotionDF = pd.read_csv('./datasets/wordsentimentemotion.csv')
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
