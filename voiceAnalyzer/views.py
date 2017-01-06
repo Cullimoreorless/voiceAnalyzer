@@ -21,7 +21,7 @@ def home():
         dow_data = ts.get_tweet_day_of_week_data().to_json(orient='records')
         hod_data = ts.get_tweet_hour_of_day_data().to_json(orient='records')
         sent_data = ts.get_tweet_sentiment_data().to_json(orient='records')
-        sent_emot_data = ts.get_word_emotion_sentiment_data().to_json(orient='records')
+        sent_emot_data = ts.get_word_neg_pos_data().to_json(orient='records')
         word_cloud_data = ts.get_word_cloud_data()
     return render_template(
         'home.html',

@@ -5,7 +5,7 @@ from pprint import pprint as pp
 from datetime import datetime, timedelta
 import string
 from pandas import pandas as pd
-from voiceAnalyzer import twitterApi, sentimentDF, sentimentEmotionDF
+from voiceAnalyzer import twitterApi, sentimentDF, posNegDF
 
 
 class TwitterService:
@@ -19,17 +19,27 @@ class TwitterService:
         self._linear_scale = self._get_linear_scale()
 
     def _retrieve_tweets(self):
-        return twitterApi.statuses.user_timeline(
-            screen_name=self._username,
-            count=self._count
-        )
+        try:
+            return twitterApi.statuses.user_timeline(
+                screen_name=self._username,
+                count=self._count,
+                exclude_replies=False,
+                include_rts=False
+            )
+        except Exception as ex:
+            pp(ex)
 
     def _get_stripped_tweets(self):
         tweets = self._retrieve_tweets()
+        offset = tweets[0]['user']['utc_offset']
+        pp(offset)
+        if offset is None:
+            pp('offset is None')
+            offset = -21600
         return [{'text':x['text'].lower().encode('unicode_escape').decode('utf-8'),
                  'created':datetime.strptime(x['created_at'] + ' UTC',
                                              '%a %b %d %H:%M:%S +0000 %Y %Z')
-                           + timedelta(seconds=x['user']['utc_offset'])}
+                           + timedelta(seconds=offset)}
                 for x in tweets if not bool(x['retweeted'])]
 
     def _get_tweets_df(self):
@@ -42,11 +52,12 @@ class TwitterService:
 
     def _get_words_df(self):
         punctuation_stripper = str.maketrans(
-            {key: None for key in '\n' + string.punctuation.replace('#', '')})
+            {key: None for key in '\n' + string.punctuation.replace('#', '').replace('@','')})
         just_the_text_bits = [twt['text'].replace('\\n', ' ').translate(punctuation_stripper)
                               for twt in self._stripped_tweets]
         all_the_text = reduce(lambda x, y: x +' '+ y, just_the_text_bits)
-        word_df = pd.DataFrame({'word':all_the_text.split(), 'numberOfOccurences':1})
+        words = [wrd for wrd in all_the_text.split() if not wrd.startswith('@')]
+        word_df = pd.DataFrame({'word':words, 'numberOfOccurences':1})
         return word_df.groupby('word', as_index=False).agg({'numberOfOccurences':'count'})
 
     def _get_linear_scale(self):
@@ -80,9 +91,9 @@ class TwitterService:
                 {'numberOfOccurences':'count'})
         return TwitterService.add_percentage_column(grouped_sentiments, 'numberOfOccurences')
 
-    def get_word_emotion_sentiment_data(self):
+    def get_word_neg_pos_data(self):
         """parses words matched with emotions and sentiment (pos, neg, trust...)"""
-        merged_df = self._words_df.merge(sentimentEmotionDF, left_on="word", right_on="word")
+        merged_df = self._words_df.merge(posNegDF, left_on="word", right_on="word")
         grouped_sentiment_emotions = merged_df.groupby(
             'sentiment', as_index=False).agg(
                 {'numberOfOccurences':'count'}
@@ -92,12 +103,18 @@ class TwitterService:
 
     def get_word_cloud_data(self):
         """get word cloud data with words that match the NRC sentiment data"""
-        merged_df = self._words_df.merge(sentimentDF, left_on='word', right_on='word')
-        word_counts = merged_df.groupby(
-            'word', as_index=False).agg(
-                {'numberOfOccurences':'count'})
-        word_cloud_list = [[x[1]['word'], self._linear_scale(x[1]['numberOfOccurences'])] 
-                           for x in word_counts.iterrows()]
+        # merged_df = self._words_df.merge(sentimentDF, left_on='word', right_on='word')
+        # word_counts = merged_df.groupby(
+        #     'word', as_index=False).agg(
+        #         {'numberOfOccurences':'count'})
+        excluded_words = ['as', 'again', 'an', 'a', 'im','i','in', 'if', 'it', 'its',
+                          'are', 'doesnt', 'by', 'after', 'at', 'he', 'she', 'we', 'or',
+                          'you', 'your', 'about', 'didnt', 'cant', 'be', 'on', 'then',
+                          'not', 'so', 'also', 'were', 'there', 'is', 'his', 'id', 'any',
+                          'had', 'have', 'her']
+        word_cloud_list = [[x[1]['word'], self._linear_scale(x[1]['numberOfOccurences'])]
+                           for x in self._words_df.iterrows()
+                           if x[1]['word'] not in excluded_words]
         return word_cloud_list
 
     @staticmethod
@@ -110,17 +127,7 @@ class TwitterService:
             axis=1)
         return dataframe
 
-def get_size_for_occurrences(num_occurrences):
-    if num_occurrences <= 5:
-        return num_occurrences
-    elif num_occurrences > 5 and num_occurrences <= 10:
-        return 10
-    elif num_occurrences > 10 and num_occurrences <= 15:
-        return 15
-    elif num_occurrences > 15 and num_occurrences <= 25:
-        return 25
-    else:
-        return 40
+
 
 def define_linear_scale(minimum_value, maximum_value):
     min_scale = 1
